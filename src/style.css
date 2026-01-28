@@ -1,5 +1,5 @@
 :root {
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', 'Noto Sans Thai Looped', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -99,6 +99,16 @@ body {
 #image-select option {
   background: #1e293b;
   color: white;
+}
+
+#photo-date {
+  font-family: 'Noto Sans Thai Looped', 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.7);
+  padding-left: 12px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  white-space: nowrap;
 }
 
 /* Control Panel */
