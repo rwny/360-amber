@@ -1,4 +1,11 @@
-// test 1
+// Configuration
+const CONFIG = {
+  imageCount: 23, // Change this number when you add/remove images
+  basePath: 'p/260116', // The folder where your images are
+  imageNamePrefix: 'image', // Expected name: image1.jpg, image2.jpg...
+  imageExtension: '.jpg'
+};
+
 // Global variables
 let imageFiles = [];
 let currentSource = null;
@@ -6,7 +13,7 @@ let currentScene = null;
 let viewer = null;
 
 // Initialize the application when the DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   initializeApp();
 });
 
@@ -15,18 +22,13 @@ async function initializeApp() {
   // Wait for Marzipano to be loaded before initializing
   if (typeof Marzipano === 'undefined') {
     console.error('Marzipano library failed to load');
-    // Wait a bit and try again
     setTimeout(initializeApp, 100);
     return;
   }
 
-  // Initialize Marzipano viewer
   const viewerContainer = document.getElementById('pano-container');
-  
-  // Create viewer instance
   viewer = new Marzipano.Viewer(viewerContainer);
 
-  // Populate the image list and set up the viewer
   await populateImageList();
   setupEventListeners();
 }
@@ -34,69 +36,27 @@ async function initializeApp() {
 // Function to fetch and populate image list
 async function populateImageList() {
   try {
-    // Fetch the image list from the JSON file
-    const response = await fetch('/p/260116/image-list.json');
+    // 1. Try to fetch from JSON if it exists
+    const response = await fetch(`/${CONFIG.basePath}/image-list.json`);
     if (response.ok) {
       const imageNames = await response.json();
-      // Convert image names to full paths
-      imageFiles = imageNames.map(name => `p/260116/${name}`);
+      imageFiles = imageNames.map(name => `${CONFIG.basePath}/${name}`);
     } else {
-      // Fallback to hardcoded list if JSON file is not available
-      imageFiles = [
-        'p/260116/CAM_20260126163812_0095_D.JPG',
-        'p/260116/CAM_20260126163825_0096_D.JPG',
-        'p/260116/CAM_20260126163836_0097_D.JPG',
-        'p/260116/CAM_20260126163847_0098_D.JPG',
-        'p/260116/CAM_20260126163858_0099_D.JPG',
-        'p/260116/CAM_20260126163909_0100_D.JPG',
-        'p/260116/CAM_20260126163922_0101_D.JPG',
-        'p/260116/CAM_20260126163934_0102_D.JPG',
-        'p/260116/CAM_20260126163945_0103_D.JPG',
-        'p/260116/CAM_20260126163958_0104_D.JPG',
-        'p/260116/CAM_20260126164009_0105_D.JPG',
-        'p/260116/CAM_20260126164019_0106_D.JPG',
-        'p/260116/CAM_20260126164029_0107_D.JPG',
-        'p/260116/CAM_20260126164042_0108_D.JPG',
-        'p/260116/CAM_20260126164053_0109_D.JPG',
-        'p/260116/CAM_20260126164106_0110_D.JPG',
-        'p/260116/CAM_20260126164118_0111_D.JPG',
-        'p/260116/CAM_20260126164127_0112_D.JPG',
-        'p/260116/CAM_20260126164146_0113_D.JPG',
-        'p/260116/CAM_20260126164157_0114_D.JPG',
-        'p/260116/CAM_20260126164210_0115_D.JPG',
-        'p/260116/CAM_20260126164238_0116_D.JPG',
-        'p/260116/CAM_20260126164317_0117_D.JPG'
-      ];
+      // 2. Fallback: Generate sequential list (image1.jpg, image2.jpg, etc.)
+      imageFiles = [];
+      for (let i = 1; i <= CONFIG.imageCount; i++) {
+        imageFiles.push(`${CONFIG.basePath}/${CONFIG.imageNamePrefix}${i}${CONFIG.imageExtension}`);
+      }
     }
   } catch (error) {
-    // Fallback to hardcoded list if fetch fails
-    imageFiles = [
-      'p/260116/CAM_20260126163812_0095_D.JPG',
-      'p/260116/CAM_20260126163825_0096_D.JPG',
-      'p/260116/CAM_20260126163836_0097_D.JPG',
-      'p/260116/CAM_20260126163847_0098_D.JPG',
-      'p/260116/CAM_20260126163858_0099_D.JPG',
-      'p/260116/CAM_20260126163909_0100_D.JPG',
-      'p/260116/CAM_20260126163922_0101_D.JPG',
-      'p/260116/CAM_20260126163934_0102_D.JPG',
-      'p/260116/CAM_20260126163945_0103_D.JPG',
-      'p/260116/CAM_20260126163958_0104_D.JPG',
-      'p/260116/CAM_20260126164009_0105_D.JPG',
-      'p/260116/CAM_20260126164019_0106_D.JPG',
-      'p/260116/CAM_20260126164029_0107_D.JPG',
-      'p/260116/CAM_20260126164042_0108_D.JPG',
-      'p/260116/CAM_20260126164053_0109_D.JPG',
-      'p/260116/CAM_20260126164106_0110_D.JPG',
-      'p/260116/CAM_20260126164118_0111_D.JPG',
-      'p/260116/CAM_20260126164127_0112_D.JPG',
-      'p/260116/CAM_20260126164146_0113_D.JPG',
-      'p/260116/CAM_20260126164157_0114_D.JPG',
-      'p/260116/CAM_20260126164210_0115_D.JPG',
-      'p/260116/CAM_20260126164238_0116_D.JPG',
-      'p/260116/CAM_20260126164317_0117_D.JPG'
-    ];
+    // 3. Error Fallback: Use the same sequential logic
+    console.warn('Could not fetch image-list.json, using sequential fallback');
+    imageFiles = [];
+    for (let i = 1; i <= CONFIG.imageCount; i++) {
+      imageFiles.push(`${CONFIG.basePath}/${CONFIG.imageNamePrefix}${i}${CONFIG.imageExtension}`);
+    }
   }
-  
+
   // Populate the image selector dropdown
   const imageSelect = document.getElementById('image-select');
   if (imageSelect) {
@@ -117,7 +77,7 @@ function setupEventListeners() {
   if (imageFiles.length > 0) {
     loadImage(imageFiles[0]);
   }
-  
+
   // Set up event listeners for controls
   document.getElementById('zoom-in').addEventListener('click', () => {
     if (currentScene) {
@@ -127,7 +87,7 @@ function setupEventListeners() {
       view.setFov(Math.max(currentFov * 0.75, 0.1));
     }
   });
-  
+
   document.getElementById('zoom-out').addEventListener('click', () => {
     if (currentScene) {
       const view = currentScene.view();
@@ -136,7 +96,7 @@ function setupEventListeners() {
       view.setFov(Math.min(currentFov * 1.25, Math.PI));
     }
   });
-  
+
   document.getElementById('reset-view').addEventListener('click', () => {
     if (currentScene) {
       // Reset view parameters to default
@@ -145,7 +105,7 @@ function setupEventListeners() {
       currentScene.view().setPitch(0);
     }
   });
-  
+
   // Handle image selection change
   const imageSelect = document.getElementById('image-select');
   if (imageSelect) {
@@ -159,17 +119,17 @@ function setupEventListeners() {
       }, 500);
     });
   }
-  
+
   // Add keyboard controls
   document.addEventListener('keydown', (event) => {
     if (!currentScene) return;
-    
+
     const view = currentScene.view();
     const currentYaw = view.yaw();
     const currentPitch = view.pitch();
     const currentFov = view.fov();
-    
-    switch(event.key) {
+
+    switch (event.key) {
       case 'ArrowLeft':
         view.setYaw(currentYaw - 0.1);
         break;
@@ -177,10 +137,10 @@ function setupEventListeners() {
         view.setYaw(currentYaw + 0.1);
         break;
       case 'ArrowUp':
-        view.setPitch(Math.max(currentPitch - 0.1, -Math.PI/2));
+        view.setPitch(Math.max(currentPitch - 0.1, -Math.PI / 2));
         break;
       case 'ArrowDown':
-        view.setPitch(Math.min(currentPitch + 0.1, Math.PI/2));
+        view.setPitch(Math.min(currentPitch + 0.1, Math.PI / 2));
         break;
       case '+':
       case '=':
@@ -202,19 +162,19 @@ function setupEventListeners() {
 function loadImage(imageFile) {
   // Store the new scene to be loaded
   let newScene = null;
-  
+
   // Create source from image
   currentSource = Marzipano.ImageUrlSource.fromString(
-    `/${imageFile}`, 
+    `/${imageFile}`,
     { width: 4000, height: 2000 } // Assuming equirectangular projection
   );
-  
+
   // Create geometry (assuming equirectangular)
   const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-  
+
   // Create view
   const view = new Marzipano.RectilinearView();
-  
+
   // Create the new scene
   newScene = viewer.createScene({
     source: currentSource,
@@ -222,12 +182,12 @@ function loadImage(imageFile) {
     view: view,
     pinFirstLevel: true
   });
-  
+
   // Since switchTo doesn't return a Promise, use a timeout to ensure proper sequencing
   setTimeout(() => {
     // Switch to the new scene
     newScene.switchTo({ transitionDuration: 1000 });
-    
+
     // Destroy the old scene after a delay to ensure transition is complete
     setTimeout(() => {
       if (currentScene && currentScene !== newScene) {
