@@ -1,3 +1,4 @@
+// test 1
 // Global variables
 let imageFiles = [];
 let currentSource = null;
