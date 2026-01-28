@@ -1,9 +1,9 @@
 // Configuration
 const CONFIG = {
   imageCount: 11, // Change this number when you add/remove images
-  basePath: 'p/260116', // The folder where your images are
-  imageNamePrefix: 'image', // Expected name: image1.jpg, image2.jpg...
-  imageExtension: '.jpg'
+  basePath: '', // Images are directly in the public folder root
+  imageNamePrefix: 'c', // Updated to match your c1.JPG, c2.JPG naming
+  imageExtension: '.JPG' // Updated to match uppercase .JPG
 };
 
 // Global variables
@@ -37,10 +37,13 @@ async function initializeApp() {
 async function populateImageList() {
   try {
     // 1. Try to fetch from JSON if it exists
-    const response = await fetch(`/${CONFIG.basePath}/image-list.json`);
+    const url = CONFIG.basePath ? `/${CONFIG.basePath}/image-list.json` : '/image-list.json';
+    const response = await fetch(url);
     if (response.ok) {
       const imageNames = await response.json();
-      imageFiles = imageNames.map(name => `${CONFIG.basePath}/${name}`);
+      imageFiles = imageNames.map(name => {
+        return CONFIG.basePath ? `${CONFIG.basePath}/${name}` : name;
+      });
     } else {
       // 2. Fallback: Generate sequential list (image1.jpg, image2.jpg, etc.)
       imageFiles = [];
@@ -195,8 +198,8 @@ function loadImage(imageFile) {
     pinFirstLevel: true
   });
 
-  // Add white mask at the bottom (Nadir)
-  addNadirMask(newScene);
+  // Mask is now handled by the Python script and baked into the image
+  // addNadirMask(newScene);
 
   // Since switchTo doesn't return a Promise, use a timeout to ensure proper sequencing
   setTimeout(() => {
@@ -212,18 +215,4 @@ function loadImage(imageFile) {
       currentScene = newScene;
     }, 1200); // Slightly longer than transition duration
   }, 100);
-}
-
-// Function to add a white mask at the bottom (Nadir) to hide photographer
-function addNadirMask(scene) {
-  const container = document.createElement('div');
-  container.className = 'nadir-mask-container';
-
-  const mask = document.createElement('div');
-  mask.className = 'nadir-mask';
-  container.appendChild(mask);
-
-  // Position at -90 degrees pitch (straight down)
-  // Yaw doesn't matter for straight down
-  scene.hotspotContainer().createHotspot(container, { yaw: 0, pitch: Math.PI / 2 });
 }
