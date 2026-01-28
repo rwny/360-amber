@@ -5,61 +5,7 @@
 <link rel="icon" type="image/svg+xml" href="/vite.svg">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>360° Hotspot Viewer</title>
-<style>
-   body {
-   margin: 0;
-   padding: 0;
-   overflow: hidden;
-   font-family: Arial, sans-serif;
-   }
-   
-   #pano-container {
-   width: 100vw;
-   height: 100vh;
-   position: relative;
-   }
-   
-   #controls {
-   position: absolute;
-   top: 60px; /* Positioned below the image selector */
-   left: 10px;
-   z-index: 10;
-   background: rgba(0, 0, 0, 0.7);
-   color: white;
-   padding: 10px;
-   border-radius: 5px;
-   }
-   
-   .control-btn {
-   background: #4CAF50;
-   border: none;
-   color: white;
-   padding: 8px 16px;
-   margin: 5px;
-   cursor: pointer;
-   border-radius: 3px;
-   }
-   
-   .control-btn:hover {
-   background: #45a049;
-   }
-   
-   #image-selector {
-   position: absolute;
-   top: 20px;
-   left: 50%;
-   transform: translateX(-50%);
-   z-index: 10;
-   background: rgba(0, 0, 0, 0.7);
-   color: white;
-   padding: 10px;
-   border-radius: 5px;
-   }
-   
-   select {
-   padding: 5px;
-   }
-</style>
+<link rel="stylesheet" href="/src/style.css">
 </head>
 <body>
 <div id="pano-container"></div>
