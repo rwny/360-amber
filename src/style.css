@@ -43,6 +43,14 @@ body {
 
 .glass-panel:hover {
   border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+#image-selector:hover {
+  transform: translate(-50%, -2px);
+}
+
+#controls:hover {
   transform: translateY(-2px);
 }
 
@@ -53,11 +61,15 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-  padding: 12px 24px;
+  padding: 10px 24px;
   border-radius: 50px;
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+#image-selector.ui-hidden {
+  transform: translate(-50%, -150%);
 }
 
 #image-selector label {
@@ -92,14 +104,33 @@ body {
 /* Control Panel */
 #controls {
   position: absolute;
-  bottom: 40px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 24px;
+  left: 24px;
   z-index: 100;
-  padding: 12px;
-  border-radius: 20px;
+  padding: 8px;
+  border-radius: 16px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  transform: none;
+}
+
+#controls.ui-hidden {
+  transform: translateX(-150%);
+}
+
+#ui-toggle-btn {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 110;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .control-btn {
@@ -133,14 +164,28 @@ body {
 }
 
 /* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, 20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes fadeInTop {
-  from { opacity: 0; transform: translate(-50%, -20px); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
 }
 
 #image-selector {
@@ -148,28 +193,28 @@ body {
 }
 
 #controls {
-  animation: fadeIn 0.8s ease-out forwards;
+  animation: fadeInLeft 0.8s ease-out forwards;
 }
 
 /* Mobile Responsiveness */
 @media (max-width: 640px) {
   #controls {
-    bottom: 20px;
-    padding: 8px;
-    gap: 4px;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 90%;
     justify-content: center;
   }
-  
-  .control-btn {
-    padding: 8px 12px;
-    font-size: 12px;
-    flex: 1;
-  }
-  
+
   #image-selector {
+    top: 20px;
     width: 90%;
-    justify-content: space-between;
-    padding: 10px 16px;
+    justify-content: center;
+    padding: 10px;
+  }
+
+  #controls:hover,
+  #image-selector:hover {
+    transform: translateX(-50%);
   }
 }

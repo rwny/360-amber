@@ -120,6 +120,18 @@ function setupEventListeners() {
     });
   }
 
+  // UI Toggle functionality
+  const uiToggleBtn = document.getElementById('ui-toggle-btn');
+  const controls = document.getElementById('controls');
+  const imageSelector = document.getElementById('image-selector');
+
+  if (uiToggleBtn) {
+    uiToggleBtn.addEventListener('click', () => {
+      controls.classList.toggle('ui-hidden');
+      imageSelector.classList.toggle('ui-hidden');
+    });
+  }
+
   // Add keyboard controls
   document.addEventListener('keydown', (event) => {
     if (!currentScene) return;
