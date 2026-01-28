@@ -1,33 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<link rel="icon" type="image/svg+xml" href="./vite.svg">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>360° Hotspot Viewer</title>
-<link rel="stylesheet" href="./style.css">
+   <meta charset="UTF-8">
+   <link rel="icon" type="image/svg+xml" href="./vite.svg">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>360° Hotspot Viewer</title>
+   <link rel="stylesheet" href="/src/style.css">
 </head>
+
 <body>
-<div id="pano-container"></div>
+   <div id="pano-container"></div>
 
-<div id="controls">
-   <button class="control-btn" id="zoom-in">Zoom In</button>
-   <button class="control-btn" id="zoom-out">Zoom Out</button>
-   <button class="control-btn" id="reset-view">Reset View</button>
-</div>
+   <div id="controls">
+      <button class="control-btn" id="zoom-in">Zoom In</button>
+      <button class="control-btn" id="zoom-out">Zoom Out</button>
+      <button class="control-btn" id="reset-view">Reset View</button>
+   </div>
 
-<div id="image-selector">
-   <label for="image-select">Select Image:</label>
-   <select id="image-select">
-   <!-- Options will be populated by JavaScript -->
-   </select>
-</div>
+   <div id="image-selector">
+      <label for="image-select">Select Image:</label>
+      <select id="image-select">
+         <!-- Options will be populated by JavaScript -->
+      </select>
+   </div>
 
-<script src="./lib/marzipano.min.js"></script>
-<script src="./main.js"></script>
+   <script src="/lib/marzipano.min.js"></script>
+   <script type="module" src="/src/main.js"></script>
 
 
 </body>
+
 </html>
 
 <!-- 67 -->
