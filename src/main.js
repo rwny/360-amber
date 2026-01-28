@@ -1,6 +1,6 @@
 // Configuration
 const CONFIG = {
-  imageCount: 23, // Change this number when you add/remove images
+  imageCount: 11, // Change this number when you add/remove images
   basePath: 'p/260116', // The folder where your images are
   imageNamePrefix: 'image', // Expected name: image1.jpg, image2.jpg...
   imageExtension: '.jpg'
@@ -195,6 +195,9 @@ function loadImage(imageFile) {
     pinFirstLevel: true
   });
 
+  // Add white mask at the bottom (Nadir)
+  addNadirMask(newScene);
+
   // Since switchTo doesn't return a Promise, use a timeout to ensure proper sequencing
   setTimeout(() => {
     // Switch to the new scene
@@ -209,4 +212,18 @@ function loadImage(imageFile) {
       currentScene = newScene;
     }, 1200); // Slightly longer than transition duration
   }, 100);
+}
+
+// Function to add a white mask at the bottom (Nadir) to hide photographer
+function addNadirMask(scene) {
+  const container = document.createElement('div');
+  container.className = 'nadir-mask-container';
+
+  const mask = document.createElement('div');
+  mask.className = 'nadir-mask';
+  container.appendChild(mask);
+
+  // Position at -90 degrees pitch (straight down)
+  // Yaw doesn't matter for straight down
+  scene.hotspotContainer().createHotspot(container, { yaw: 0, pitch: Math.PI / 2 });
 }
