@@ -1,9 +1,24 @@
 // Configuration
 const CONFIG = {
-  imageCount: 11, // Change this number when you add/remove images
-  basePath: '', // Images are directly in the public folder root
-  imageNamePrefix: 'c', // Updated to match your c1.JPG, c2.JPG naming
-  imageExtension: '.JPG' // Updated to match uppercase .JPG
+  imageCount: 10, // User mentioned 10 images
+  basePath: '',
+  imageNamePrefix: 'c',
+  imageExtension: '.JPG'
+};
+
+// Map marker positions (in percentage x, y)
+// The user can adjust these values to match their actual locations on the map image
+const MARKER_POSITIONS = {
+  'c1.JPG': { x: 60, y: 50 },
+  'c2.JPG': { x: 45, y: 50 },
+  'c3.JPG': { x: 35, y: 50 },
+  'c4.JPG': { x: 35, y: 65 },
+  'c5.JPG': { x: 55, y: 65 },
+  'c6.JPG': { x: 75, y: 65 },
+  // 'c7.JPG': { x: 60, y: 45 },
+  // 'c8.JPG': { x: 65, y: 25 },
+  // 'c9.JPG': { x: 65, y: 15 },
+  // 'c10.JPG': { x: 5, y: 5 }
 };
 
 // Global variables
@@ -11,6 +26,7 @@ let imageFiles = [];
 let currentSource = null;
 let currentScene = null;
 let viewer = null;
+let currentImageFile = '';
 
 // Initialize the application when the DOM is loaded
 document.addEventListener('DOMContentLoaded', function () {
@@ -31,12 +47,12 @@ async function initializeApp() {
 
   await populateImageList();
   setupEventListeners();
+  setupMapMarkers();
 }
 
 // Function to fetch and populate image list
 async function populateImageList() {
   try {
-    // 1. Try to fetch from JSON if it exists
     const url = CONFIG.basePath ? `/${CONFIG.basePath}/image-list.json` : '/image-list.json';
     const response = await fetch(url);
     if (response.ok) {
@@ -45,14 +61,12 @@ async function populateImageList() {
         return CONFIG.basePath ? `${CONFIG.basePath}/${name}` : name;
       });
     } else {
-      // 2. Fallback: Generate sequential list (image1.jpg, image2.jpg, etc.)
       imageFiles = [];
       for (let i = 1; i <= CONFIG.imageCount; i++) {
         imageFiles.push(`${CONFIG.basePath}/${CONFIG.imageNamePrefix}${i}${CONFIG.imageExtension}`);
       }
     }
   } catch (error) {
-    // 3. Error Fallback: Use the same sequential logic
     console.warn('Could not fetch image-list.json, using sequential fallback');
     imageFiles = [];
     for (let i = 1; i <= CONFIG.imageCount; i++) {
@@ -60,18 +74,70 @@ async function populateImageList() {
     }
   }
 
-  // Populate the image selector dropdown
-  const imageSelect = document.getElementById('image-select');
-  if (imageSelect) {
-    // Clear existing options
-    imageSelect.innerHTML = '';
+  // Preload images in the background for faster switching
+  preloadImages();
+}
+
+// Function to preload images into browser cache
+function preloadImages() {
+  // Start preloading after a short delay to prioritize the first image load
+  setTimeout(() => {
     imageFiles.forEach((file, index) => {
-      const option = document.createElement('option');
-      option.value = file;
-      option.textContent = `View ${index + 1}`; // Show as View 1, View 2, etc.
-      imageSelect.appendChild(option);
+      // Don't preload the first one (it's already loading)
+      if (index === 0) return;
+
+      const img = new Image();
+      // Use a slight delay between starting each preload to avoid network congestion
+      setTimeout(() => {
+        img.src = `/${file}`;
+        img.onload = () => console.log(`Preloaded: ${file}`);
+      }, index * 1000);
     });
-  }
+  }, 2000);
+}
+
+// Function to setup map markers
+function setupMapMarkers() {
+  const markerContainer = document.getElementById('map-markers');
+  if (!markerContainer) return;
+
+  markerContainer.innerHTML = '';
+
+  imageFiles.forEach((file, index) => {
+    // Extract just the filename to match MARKER_POSITIONS
+    const fileName = file.split('/').pop();
+    const pos = MARKER_POSITIONS[fileName];
+
+    if (pos) {
+      const marker = document.createElement('div');
+      marker.className = 'map-marker';
+      marker.style.left = `${pos.x}%`;
+      marker.style.top = `${pos.y}%`;
+      marker.title = fileName;
+      marker.dataset.file = file;
+      marker.textContent = index + 1; // Add the number here
+
+      marker.addEventListener('click', () => {
+        if (currentImageFile !== file) {
+          loadImage(file);
+        }
+      });
+
+      markerContainer.appendChild(marker);
+    }
+  });
+}
+
+// Function to update active marker
+function updateActiveMarker(activeFile) {
+  const markers = document.querySelectorAll('.map-marker');
+  markers.forEach(m => {
+    if (m.dataset.file === activeFile) {
+      m.classList.add('active');
+    } else {
+      m.classList.remove('active');
+    }
+  });
 }
 
 // Function to set up event listeners
@@ -81,89 +147,62 @@ function setupEventListeners() {
     loadImage(imageFiles[0]);
   }
 
-  // Set up event listeners for controls
-  document.getElementById('zoom-in').addEventListener('click', () => {
-    if (currentScene) {
-      const view = currentScene.view();
-      const currentFov = view.fov();
-      // Decrease FOV to zoom in (smaller FOV = more zoom)
-      view.setFov(Math.max(currentFov * 0.75, 0.1));
-    }
-  });
+  // Zoom controls (now inside the map panel)
+  const zoomInBtn = document.getElementById('zoom-in');
+  const zoomOutBtn = document.getElementById('zoom-out');
+  const resetBtn = document.getElementById('reset-view');
 
-  document.getElementById('zoom-out').addEventListener('click', () => {
-    if (currentScene) {
-      const view = currentScene.view();
-      const currentFov = view.fov();
-      // Increase FOV to zoom out (larger FOV = less zoom)
-      view.setFov(Math.min(currentFov * 1.25, Math.PI));
-    }
-  });
+  if (zoomInBtn) {
+    zoomInBtn.addEventListener('click', () => {
+      if (currentScene) {
+        const view = currentScene.view();
+        view.setFov(Math.max(view.fov() * 0.75, 0.1));
+      }
+    });
+  }
 
-  document.getElementById('reset-view').addEventListener('click', () => {
-    if (currentScene) {
-      // Reset view parameters to default
-      currentScene.view().setFov(Math.PI / 2);
-      currentScene.view().setYaw(0);
-      currentScene.view().setPitch(0);
-    }
-  });
+  if (zoomOutBtn) {
+    zoomOutBtn.addEventListener('click', () => {
+      if (currentScene) {
+        const view = currentScene.view();
+        view.setFov(Math.min(view.fov() * 1.25, Math.PI));
+      }
+    });
+  }
 
-  // Handle image selection change
-  const imageSelect = document.getElementById('image-select');
-  if (imageSelect) {
-    // Prevent rapid switching by disabling the select temporarily
-    imageSelect.addEventListener('change', (event) => {
-      imageSelect.disabled = true;
-      loadImage(event.target.value);
-      // Re-enable after a short delay
-      setTimeout(() => {
-        imageSelect.disabled = false;
-      }, 500);
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (currentScene) {
+        currentScene.view().setFov(Math.PI / 2);
+        currentScene.view().setYaw(0);
+        currentScene.view().setPitch(0);
+      }
     });
   }
 
   // UI Toggle functionality
   const uiToggleBtn = document.getElementById('ui-toggle-btn');
-  const controls = document.getElementById('controls');
-  const imageSelector = document.getElementById('image-selector');
+  const mapContainer = document.getElementById('map-container');
 
   if (uiToggleBtn) {
     uiToggleBtn.addEventListener('click', () => {
-      controls.classList.toggle('ui-hidden');
-      imageSelector.classList.toggle('ui-hidden');
+      if (mapContainer) mapContainer.classList.toggle('ui-hidden');
     });
   }
 
-  // Add keyboard controls
+  // Keyboard controls
   document.addEventListener('keydown', (event) => {
     if (!currentScene) return;
-
     const view = currentScene.view();
-    const currentYaw = view.yaw();
-    const currentPitch = view.pitch();
-    const currentFov = view.fov();
+    const step = 0.1;
 
     switch (event.key) {
-      case 'ArrowLeft':
-        view.setYaw(currentYaw - 0.1);
-        break;
-      case 'ArrowRight':
-        view.setYaw(currentYaw + 0.1);
-        break;
-      case 'ArrowUp':
-        view.setPitch(Math.max(currentPitch - 0.1, -Math.PI / 2));
-        break;
-      case 'ArrowDown':
-        view.setPitch(Math.min(currentPitch + 0.1, Math.PI / 2));
-        break;
-      case '+':
-      case '=':
-        view.setFov(Math.max(currentFov * 0.9, 0.01));
-        break;
-      case '-':
-        view.setFov(Math.min(currentFov * 1.1, Math.PI));
-        break;
+      case 'ArrowLeft': view.setYaw(view.yaw() - step); break;
+      case 'ArrowRight': view.setYaw(view.yaw() + step); break;
+      case 'ArrowUp': view.setPitch(Math.max(view.pitch() - step, -Math.PI / 2)); break;
+      case 'ArrowDown': view.setPitch(Math.min(view.pitch() + step, Math.PI / 2)); break;
+      case '+': case '=': view.setFov(Math.max(view.fov() * 0.9, 0.01)); break;
+      case '-': view.setFov(Math.min(view.fov() * 1.1, Math.PI)); break;
       case '0':
         view.setFov(Math.PI / 2);
         view.setYaw(0);
@@ -175,44 +214,35 @@ function setupEventListeners() {
 
 // Function to load a new image
 function loadImage(imageFile) {
-  // Store the new scene to be loaded
-  let newScene = null;
+  if (currentImageFile === imageFile) return;
+  currentImageFile = imageFile;
+
+  // Update map UI immediately for better feedback
+  updateActiveMarker(imageFile);
 
   // Create source from image
   currentSource = Marzipano.ImageUrlSource.fromString(
     `/${imageFile}`,
-    { width: 4000, height: 2000 } // Assuming equirectangular projection
+    { width: 4000, height: 2000 }
   );
 
-  // Create geometry (assuming equirectangular)
   const geometry = new Marzipano.EquirectGeometry([{ width: 4000 }]);
-
-  // Create view
   const view = new Marzipano.RectilinearView();
 
-  // Create the new scene
-  newScene = viewer.createScene({
+  const newScene = viewer.createScene({
     source: currentSource,
     geometry: geometry,
     view: view,
     pinFirstLevel: true
   });
 
-  // Mask is now handled by the Python script and baked into the image
-  // addNadirMask(newScene);
-
-  // Since switchTo doesn't return a Promise, use a timeout to ensure proper sequencing
   setTimeout(() => {
-    // Switch to the new scene
     newScene.switchTo({ transitionDuration: 1000 });
-
-    // Destroy the old scene after a delay to ensure transition is complete
     setTimeout(() => {
       if (currentScene && currentScene !== newScene) {
         currentScene.destroy();
       }
-      // Update the current scene reference
       currentScene = newScene;
-    }, 1200); // Slightly longer than transition duration
+    }, 1200);
   }, 100);
 }

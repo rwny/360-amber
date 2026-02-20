@@ -19,18 +19,21 @@
 
    <button id="ui-toggle-btn" class="glass-panel control-btn" title="Toggle UI">UI</button>
 
-   <div id="controls" class="glass-panel">
-      <button class="control-btn" id="zoom-in">Zoom In</button>
-      <button class="control-btn" id="zoom-out">Zoom Out</button>
-      <button class="control-btn" id="reset-view">Reset View</button>
-   </div>
-
-   <div id="image-selector" class="glass-panel">
-      <label for="image-select">Select Image:</label>
-      <select id="image-select">
-         <!-- Options will be populated by JavaScript -->
-      </select>
-      <div id="photo-date">รูปถ่าย 16 มค. 2569</div>
+   <div id="map-container" class="glass-panel">
+      <div id="map-header">
+         <div id="map-title">Mini Map</div>
+         <div id="photo-date">16 มค. 69</div>
+      </div>
+      <div id="map-wrapper">
+         <img id="map-image" src="/keyplan.png" alt="Map"
+            onerror="this.style.display='none'; this.parentElement.classList.add('map-fallback');">
+         <div id="map-markers"></div>
+      </div>
+      <div id="map-controls">
+         <button class="control-btn" id="zoom-in" title="Zoom In">+</button>
+         <button class="control-btn" id="zoom-out" title="Zoom Out">-</button>
+         <button class="control-btn" id="reset-view" title="Reset View">Reset</button>
+      </div>
    </div>
 
    <script src="/lib/marzipano.min.js"></script>
