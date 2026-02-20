@@ -10,13 +10,13 @@ const CONFIG = {
 // The user can adjust these values to match their actual locations on the map image
 const MARKER_POSITIONS = {
   'c1.JPG': { x: 60, y: 50 },
-  'c2.JPG': { x: 45, y: 50 },
+  // 'c2.JPG': { x: 45, y: 50 },
   'c3.JPG': { x: 35, y: 50 },
   'c4.JPG': { x: 35, y: 65 },
   'c5.JPG': { x: 55, y: 65 },
-  'c6.JPG': { x: 75, y: 65 }
+  'c6.JPG': { x: 75, y: 65 },
   // 'c7.JPG': { x: 60, y: 45 },
-  // 'c8.JPG': { x: 65, y: 25 },
+  'c8.JPG': { x: 65, y: 25 },
   // 'c9.JPG': { x: 65, y: 15 },
   // 'c10.JPG': { x: 5, y: 5 }
 };
