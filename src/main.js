@@ -1,7 +1,7 @@
 // Configuration
 const CONFIG = {
-  imageCount: 10, // User mentioned 10 images
-  basePath: '',
+  imageCount: 11,
+  basePath: 'image/690116',
   imageNamePrefix: 'c',
   imageExtension: '.JPG'
 };
