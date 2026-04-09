@@ -1,6 +1,6 @@
 // Configuration
 let CONFIG = {
-  imageCount: 20,
+  imageCount: 24,
   basePath: 'image/690116',
   imageNamePrefix: 'c',
   imageExtension: '.JPG'
