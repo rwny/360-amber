@@ -220,7 +220,7 @@ body {
   z-index: 100;
   padding: 12px;
   border-radius: 20px;
-  width: 800px;
+  width: 350px;
   display: flex;
   flex-direction: column;
   gap: 12px;
