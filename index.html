@@ -10,32 +10,49 @@
    <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Thai+Looped:wght@400;500;700&display=swap"
       rel="stylesheet">
-   <title>360° Hotspot Viewer</title>
+   <title>AR-15 360° Hotspot Viewer</title>
    <link rel="stylesheet" href="/src/style.css">
 </head>
 
 <body>
    <div id="pano-container"></div>
 
-   <button id="ui-toggle-btn" class="glass-panel control-btn" title="Toggle UI">UI</button>
+   <div id="view-date-overlay" class="view-overlay">
+      <span id="overlay-date-text">16 มค. 69</span>
+   </div>
+
+   <div id="top-controls">
+      <button id="ui-toggle-btn" class="glass-panel control-btn" title="Toggle UI">UI</button>
+      <button id="capture-btn" class="glass-panel control-btn" title="Export Current View">
+         <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M12 9a3.75 3.75 0 100 7.5 3.75 3.75 0 000-7.5z" />
+            <path fill-rule="evenodd" d="M9.344 3.071a2.25 2.25 0 012.234-1.571h1.53c.887 0 1.69.544 2.234 1.571l.519.98c.11.206.324.342.556.342h3.313c1.242 0 2.25 1.008 2.25 2.25v12a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25v-12c0-1.242 1.008-2.25 2.25-2.25h3.313c.232 0 .445-.136.556-.342l.519-.98zM12 7.5a4.5 4.5 0 100 9 4.5 4.5 0 000-9z" clip-rule="evenodd" />
+         </svg>
+      </button>
+   </div>
+
+   <div id="timeline-container" class="glass-panel">
+      <div id="timeline-label">Timeline</div>
+      <div id="slider-wrapper">
+         <div id="slider-inner-wrapper">
+            <div id="slider-ticks"></div>
+            <input type="range" id="date-slider" min="0" max="0" value="0" step="1">
+         </div>
+         <div id="date-display">...</div>
+      </div>
+   </div>
 
    <div id="map-container" class="glass-panel">
       <div id="map-header">
          <div id="map-title">Mini Map</div>
-         <div id="photo-date">16 มค. 69</div>
       </div>
       <div id="map-wrapper">
          <img id="map-image" src="/image/keyplan.png" alt="Map"
             onerror="this.style.display='none'; this.parentElement.classList.add('map-fallback');">
          <div id="map-markers"></div>
       </div>
-      <div id="map-controls">
-         <button class="control-btn" id="zoom-in" title="Zoom In">+</button>
-         <button class="control-btn" id="zoom-out" title="Zoom Out">-</button>
-         <button class="control-btn" id="reset-view" title="Reset View">Reset</button>
+      <div id="map-help">Alt + ลากเพื่อย้าย | Double Click หัวข้อเพื่อบันทึกตำแหน่งและมุมมองปัจจุบัน</div>
       </div>
-   </div>
-
    <script src="/lib/marzipano.min.js"></script>
    <script type="module" src="/src/main.js"></script>
 

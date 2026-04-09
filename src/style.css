@@ -1,4 +1,4 @@
-:root {
+9:root {
   font-family: 'Inter', 'Noto Sans Thai Looped', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -50,12 +50,19 @@ body {
   transform: translateY(2px);
 }
 
-/* UI Toggle Button */
-#ui-toggle-btn {
+#top-controls {
   position: absolute;
   top: 24px;
   left: 24px;
+  display: flex;
+  gap: 12px;
   z-index: 110;
+}
+
+#ui-toggle-btn, #capture-btn {
+  position: relative;
+  top: 0;
+  left: 0;
   width: 44px;
   height: 44px;
   padding: 0;
@@ -65,6 +72,100 @@ body {
   justify-content: center;
   font-weight: bold;
 }
+
+.view-overlay {
+  position: absolute;
+  bottom: 70px; /* Above timeline */
+  right: 24px;
+  z-index: 90;
+  pointer-events: none;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#overlay-date-text {
+  font-family: 'Noto Sans Thai Looped', 'Inter', sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  opacity: 0.9;
+}
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  width: 300px;
+  padding: 24px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.modal-content h3 { margin-top: 0; color: #3b82f6; }
+.modal-options { margin: 20px 0; text-align: left; }
+.modal-actions { display: flex; gap: 10px; }
+.modal-actions button { flex: 1; }
+.control-btn.primary { background: #3b82f6; }
+
+.checkbox-container {
+  display: block;
+  position: relative;
+  padding-left: 30px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+}
+
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 18px;
+  width: 18px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.checkbox-container:hover input ~ .checkmark { background-color: rgba(255, 255, 255, 0.2); }
+.checkbox-container input:checked ~ .checkmark { background-color: #3b82f6; }
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.checkbox-container input:checked ~ .checkmark:after { display: block; }
+
+.checkbox-container .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 
 .control-btn {
   background: rgba(255, 255, 255, 0.05);
@@ -104,7 +205,7 @@ body {
   }
 
   #map-container {
-    width: 240px;
+    width: 90vw; /* สำหรับมือถือให้กว้างที่สุดเท่าที่ทำได้ */
     top: 12px;
     right: 12px;
     bottom: auto;
@@ -119,7 +220,7 @@ body {
   z-index: 100;
   padding: 12px;
   border-radius: 20px;
-  width: 280px;
+  width: 400px;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -131,6 +232,17 @@ body {
   align-items: center;
   padding-bottom: 8px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+#map-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom-color: rgba(59, 130, 246, 0.5);
+}
+
+#map-header.saving {
+  background: rgba(59, 130, 246, 0.2);
+  border-bottom-color: #3b82f6;
 }
 
 #map-title {
@@ -139,17 +251,142 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.12em;
   opacity: 0.6;
+  color: white;
+  transition: all 0.3s ease;
 }
 
-#photo-date {
-  font-family: 'Noto Sans Thai Looped', 'Inter', sans-serif;
-  font-size: 11px;
-  font-weight: 600;
-  color: #bec2ca;
-  background: rgba(59, 130, 246, 0.1);
-  padding: 2px 8px;
-  border-radius: 4px;
+#map-header:hover #map-title {
+  opacity: 1;
+  color: #3b82f6;
 }
+
+#map-header.saving #map-title {
+  opacity: 1;
+  color: white;
+  animation: pulse-text 1s infinite;
+}
+
+@keyframes pulse-text {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; }
+  100% { opacity: 0.5; }
+}
+
+#timeline-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 8px 20px;
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+  border-bottom: none;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  height: 50px;
+  box-sizing: border-box;
+}
+
+#timeline-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.6;
+  white-space: nowrap;
+}
+
+#slider-wrapper {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+#slider-inner-wrapper {
+  flex-grow: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+#slider-ticks {
+  position: absolute;
+  left: 7px; /* Matches half of thumb width (14px) */
+  right: 7px;
+  height: 2px;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tick {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  margin-top: -4px; /* Centered on the 2px track */
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+}
+
+
+#date-slider {
+  width: 100%;
+  margin: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  outline: none;
+  position: relative;
+  z-index: 2;
+}
+
+
+#date-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  background: #3b82f6;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+#date-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+#date-display {
+  font-family: 'Noto Sans Thai Looped', 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #3b82f6;
+  background: rgba(59, 130, 246, 0.1);
+  padding: 2px 10px;
+  border-radius: 4px;
+  min-width: 70px;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  #timeline-container {
+    padding: 8px 12px;
+    gap: 10px;
+  }
+  
+  #timeline-label {
+    display: none;
+  }
+}
+
 
 #map-controls {
   display: flex;
@@ -207,22 +444,23 @@ body {
 
 .map-marker {
   position: absolute;
-  width: 16px;
-  height: 16px;
-  background: rgba(49, 47, 46, 0.7);
+  width: 24px; /* ใหญ่ขึ้นจาก 16px */
+  height: 24px;
+  background: rgba(49, 47, 46, 0.85);
   border: 2px solid white;
   border-radius: 50%;
   transform: translate(-50%, -50%);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
+  font-size: 13px; /* ใหญ่ขึ้นจาก 10px */
   font-weight: 700;
   color: white;
   user-select: none;
+  z-index: 5;
 }
 
 .map-marker:hover {
@@ -273,6 +511,22 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.map-marker.dragging {
+  background: #fbbf24 !important;
+  border-color: white !important;
+  transform: translate(-50%, -50%) scale(1.5) !important;
+  z-index: 1000 !important;
+  cursor: grabbing !important;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.8) !important;
+}
+
+#map-help {
+  font-size: 8px;
+  opacity: 0.4;
+  text-align: center;
+  margin-top: 4px;
 }
 
 #map-container {
